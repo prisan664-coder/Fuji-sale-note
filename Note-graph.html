@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="lo">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ສະແດງກາຟຍອດຂາຍ (Multi-Year Version)</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans Lao', sans-serif;
+            padding: 20px;
+            background: #f4f7f9;
+        }
+
+        .navbar {
+            background: #28a745;
+            padding: 10px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            display: inline-block;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .filter-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        select {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid #28a745;
+            font-size: 16px;
+            font-family: 'Noto Sans Lao';
+            cursor: pointer;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stat-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-top: 5px solid #28a745;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <a href="index.html"><i class="bi bi-house-door-fill"></i> ໜ້າຫຼັກ</a>
+        <a href="index.html"><i class="bi bi-pencil-square"></i> ບັນທຶກຍອດຂາຍ</a>
+    </div>
+
+    <h2>📊 ກາຟສະຫຼຸບຍອດຂາຍລາຍເດືອນ</h2>
+
+    <div class="filter-section">
+        <label><b>ເລືອກປີທີ່ຕ້ອງການເບິ່ງ: </b></label>
+        <select id="yearSelect" onchange="loadChartData()"></select>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="salesChart"></canvas>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h4>💰 ຍອດຂາຍລວມທັງປີ</h4>
+            <h2 id="yearlyTotal" style="color: #28a745;">0 ກີບ</h2>
+        </div>
+        <div class="stat-card">
+            <h4>📅 ເດືອນທີ່ຂາຍດີທີ່ສຸດ</h4>
+            <h2 id="bestMonth" style="color: #17a2b8;">-</h2>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDGZmA7ND52gIKsaUfjprUVW7QZdeU-Kf8",
+            authDomain: "investment-94563.firebaseapp.com",
+            projectId: "investment-94563",
+            databaseURL: "https://investment-94563-default-rtdb.asia-southeast1.firebasedatabase.app/",
+            storageBucket: "investment-94563.firebasestorage.app",
+            messagingSenderId: "566596545320",
+            appId: "1:566596545320:web:7469c13e5e59579be1fe1d"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // ສ້າງລາຍຊື່ປີໃຫ້ເລືອກ (2024 - 2030)
+        function initYearSelect() {
+            const select = document.getElementById('yearSelect');
+            const thisYear = new Date().getFullYear();
+            for (let y = 2024; y <= 2030; y++) {
+                let opt = document.createElement('option');
+                opt.value = y;
+                opt.textContent = "ປີ " + y;
+                if (y === thisYear) opt.selected = true;
+                select.appendChild(opt);
+            }
+        }
+
+        const monthsLao = ["ມັງກອນ", "ກຸມພາ", "ມີນາ", "ເມສາ", "ພຶດສະພາ", "ມິຖຸນາ", "ກໍລະກົດ", "ສິງຫາ", "ກັນຍາ", "ຕຸລາ", "ພະຈິກ", "ທັນວາ"];
+        let monthlyData = new Array(12).fill(0);
+        let myChart;
+
+        function loadChartData() {
+            const selectedYear = document.getElementById('yearSelect').value;
+
+            // ດຶງຂໍ້ມູນຕາມປີທີ່ເລືອກ
+            db.ref(`sales/${selectedYear}`).on('value', snap => {
+                monthlyData.fill(0);
+                let yearlyTotal = 0;
+
+                if (snap.exists()) {
+                    snap.forEach(monthSnap => {
+                        const monthIndex = parseInt(monthSnap.key) - 1;
+                        let monthSum = 0;
+                        monthSnap.forEach(saleSnap => {
+                            monthSum += saleSnap.val().price;
+                        });
+                        monthlyData[monthIndex] = monthSum;
+                        yearlyTotal += monthSum;
+                    });
+                }
+                updateUI(yearlyTotal);
+            });
+        }
+
+        function updateUI(total) {
+            document.getElementById('yearlyTotal').innerText = total.toLocaleString() + " ກີບ";
+            const maxVal = Math.max(...monthlyData);
+            const bestIndex = monthlyData.indexOf(maxVal);
+            document.getElementById('bestMonth').innerText = maxVal > 0 ? monthsLao[bestIndex] : "ບໍ່ມີຂໍ້ມູນ";
+            renderChart();
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            if (myChart) myChart.destroy();
+
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: monthsLao,
+                    datasets: [{
+                        label: 'ຍອດຂາຍ (ກີບ)',
+                        data: monthlyData,
+                        backgroundColor: 'rgba(40, 167, 69, 0.7)',
+                        borderColor: '#28a745',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString() } }
+                    }
+                }
+            });
+        }
+
+        initYearSelect();
+        loadChartData();
+    </script>
+</body>
+
+</html>
