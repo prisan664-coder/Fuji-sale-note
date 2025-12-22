@@ -1,0 +1,1 @@
+# Fuji-sale-note
