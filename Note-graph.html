@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="lo">
 
 <head>
     <meta charset="UTF-8">
-    <title>ສະແດງກາຟຍອດຂາຍ (Multi-Year Version)</title>
+    <title>📊 ກຣາບສະຖິຕິ ແລະ ແຈ້ງເຕືອນງົບປະມານ</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@100..900&display=swap" rel="stylesheet">
@@ -12,67 +13,116 @@
             font-family: 'Noto Sans Lao', sans-serif;
             padding: 20px;
             background: #f4f7f9;
+            color: #333;
         }
 
         .navbar {
-            background: #28a745;
+            background: #007bff;
             padding: 10px;
             margin-bottom: 25px;
             border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .navbar a {
             color: white;
             text-decoration: none;
+            font-size: 17px;
             padding: 8px 15px;
             display: inline-block;
         }
 
-        .chart-container {
+        .container {
             background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            max-width: 900px;
-            margin: 0 auto;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 1000px;
+            margin: auto;
         }
 
-        .filter-section {
+        h2 {
+            color: #007bff;
             text-align: center;
             margin-bottom: 20px;
         }
 
-        select {
-            padding: 10px 20px;
+        /* Alert Style */
+        #budgetAlert {
+            margin-bottom: 20px;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            padding: 15px;
             border-radius: 8px;
-            border: 1px solid #28a745;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            animation: shake 0.5s;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            border-left: 5px solid #dc3545;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .filter-section {
+            margin-bottom: 20px;
+            text-align: center;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
             font-size: 16px;
-            font-family: 'Noto Sans Lao';
             cursor: pointer;
         }
 
-        h2 {
-            text-align: center;
-            color: #2c3e50;
+        .chart-container {
+            position: relative;
+            height: 450px;
+            width: 100%;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+        .footer {
+            text-align: center;
             margin-top: 30px;
-            max-width: 900px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .stat-card {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            border-top: 5px solid #28a745;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            color: #888;
+            font-size: 13px;
         }
     </style>
 </head>
@@ -80,126 +130,173 @@
 <body>
 
     <div class="navbar">
-        <a href="index.html"><i class="bi bi-house-door-fill"></i> ໜ້າຫຼັກ</a>
-        <a href="index.html"><i class="bi bi-pencil-square"></i> ບັນທຶກຍອດຂາຍ</a>
+        <a href="index.html"><i class="bi bi-house-door-fill"></i> ກັບຄືນໜ້າຫຼັກ</a>
     </div>
 
-    <h2>📊 ກາຟສະຫຼຸບຍອດຂາຍລາຍເດືອນ</h2>
+    <div class="container">
+        <h2><i class="bi bi-graph-up-arrow"></i> ວິເຄາະລາຍຈ່າຍປະຈຳວັນ</h2>
 
-    <div class="filter-section">
-        <label><b>ເລືອກປີທີ່ຕ້ອງການເບິ່ງ: </b></label>
-        <select id="yearSelect" onchange="loadChartData()"></select>
-    </div>
+        <div id="budgetAlert"></div>
 
-    <div class="chart-container">
-        <canvas id="salesChart"></canvas>
-    </div>
-
-    <div class="stats-grid">
-        <div class="stat-card">
-            <h4>💰 ຍອດຂາຍລວມທັງປີ</h4>
-            <h2 id="yearlyTotal" style="color: #28a745;">0 ກີບ</h2>
+        <div class="filter-section">
+            <label><b>ເລືອກເດືອນເບິ່ງສະຖິຕິ:</b></label>
+            <select id="monthSelect" onchange="updateGraph()"></select>
         </div>
-        <div class="stat-card">
-            <h4>📅 ເດືອນທີ່ຂາຍດີທີ່ສຸດ</h4>
-            <h2 id="bestMonth" style="color: #17a2b8;">-</h2>
+
+        <div class="chart-container">
+            <canvas id="expenseChart"></canvas>
         </div>
+    </div>
+
+    <div class="footer">
+        Update version 5.7 (Advanced Graph & Budget Alert)
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
     <script>
+        // 1. Firebase Config (ໃຊ້ຕົວດຽວກັນກັບໜ້າຫຼັກ)
         const firebaseConfig = {
-            apiKey: "AIzaSyDGZmA7ND52gIKsaUfjprUVW7QZdeU-Kf8",
-            authDomain: "investment-94563.firebaseapp.com",
-            projectId: "investment-94563",
-            databaseURL: "https://investment-94563-default-rtdb.asia-southeast1.firebasedatabase.app/",
-            storageBucket: "investment-94563.firebasestorage.app",
-            messagingSenderId: "566596545320",
-            appId: "1:566596545320:web:7469c13e5e59579be1fe1d"
+            apiKey: "AIzaSyC8b0h8yyTo5th6UMrI4_dKUB1ZnvCwZBw",
+            authDomain: "fuji-mobile-shop.firebaseapp.com",
+            databaseURL: "https://fuji-mobile-shop-default-rtdb.asia-southeast1.firebasedatabase.app/",
+            projectId: "fuji-mobile-shop",
+            storageBucket: "fuji-mobile-shop.appspot.com",
+            messagingSenderId: "753053073037",
+            appId: "1:753053073037:web:7c9cb46e055b91a4cf2cc4"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // ສ້າງລາຍຊື່ປີໃຫ້ເລືອກ (2024 - 2030)
-        function initYearSelect() {
-            const select = document.getElementById('yearSelect');
-            const thisYear = new Date().getFullYear();
-            for (let y = 2024; y <= 2030; y++) {
-                let opt = document.createElement('option');
-                opt.value = y;
-                opt.textContent = "ປີ " + y;
-                if (y === thisYear) opt.selected = true;
-                select.appendChild(opt);
+        let myChart;
+        const BUDGET_LIMIT = 200000; // ກຳນົດງົບປະມານ 200,000 ກີບ/ວັນ
+
+        // 2. ສ້າງ Dropdown ເລືອກເດືອນ
+        function initPage() {
+            const monthSelect = document.getElementById('monthSelect');
+            const now = new Date();
+            for (let y = 2025; y <= 2026; y++) {
+                for (let m = 1; m <= 12; m++) {
+                    const mStr = m.toString().padStart(2, '0');
+                    const opt = document.createElement('option');
+                    opt.value = `${y}/${mStr}`;
+                    opt.textContent = `ເດືອນ ${mStr} ປີ ${y}`;
+                    if (y === now.getFullYear() && m === (now.getMonth() + 1)) opt.selected = true;
+                    monthSelect.appendChild(opt);
+                }
             }
+            updateGraph();
         }
 
-        const monthsLao = ["ມັງກອນ", "ກຸມພາ", "ມີນາ", "ເມສາ", "ພຶດສະພາ", "ມິຖຸນາ", "ກໍລະກົດ", "ສິງຫາ", "ກັນຍາ", "ຕຸລາ", "ພະຈິກ", "ທັນວາ"];
-        let monthlyData = new Array(12).fill(0);
-        let myChart;
+        // 3. ດຶງຂໍ້ມູນຈາກ Firebase
+        function updateGraph() {
+            const [year, month] = document.getElementById('monthSelect').value.split('/');
 
-        function loadChartData() {
-            const selectedYear = document.getElementById('yearSelect').value;
+            db.ref(`expenses/${year}/${month}`).on('value', snapshot => {
+                const dailyTotals = {};
+                const todayStr = new Date().toISOString().split('T')[0];
+                let todayExpense = 0;
 
-            // ດຶງຂໍ້ມູນຕາມປີທີ່ເລືອກ
-            db.ref(`sales/${selectedYear}`).on('value', snap => {
-                monthlyData.fill(0);
-                let yearlyTotal = 0;
-
-                if (snap.exists()) {
-                    snap.forEach(monthSnap => {
-                        const monthIndex = parseInt(monthSnap.key) - 1;
-                        let monthSum = 0;
-                        monthSnap.forEach(saleSnap => {
-                            monthSum += saleSnap.val().price;
-                        });
-                        monthlyData[monthIndex] = monthSum;
-                        yearlyTotal += monthSum;
+                if (snapshot.exists()) {
+                    snapshot.forEach(child => {
+                        const val = child.val();
+                        const d = val.date;
+                        const p = parseFloat(val.price) || 0;
+                        dailyTotals[d] = (dailyTotals[d] || 0) + p;
+                        if (d === todayStr) todayExpense += p;
                     });
                 }
-                updateUI(yearlyTotal);
+
+                // ສະແດງການແຈ້ງເຕືອນ
+                displayAlert(todayExpense);
+
+                // ກຽມຂໍ້ມູນສຳລັບກຣາບ
+                const labels = Object.keys(dailyTotals).sort();
+                const dataValues = labels.map(label => dailyTotals[label]);
+
+                renderChart(labels, dataValues);
             });
         }
 
-        function updateUI(total) {
-            document.getElementById('yearlyTotal').innerText = total.toLocaleString() + " ກີບ";
-            const maxVal = Math.max(...monthlyData);
-            const bestIndex = monthlyData.indexOf(maxVal);
-            document.getElementById('bestMonth').innerText = maxVal > 0 ? monthsLao[bestIndex] : "ບໍ່ມີຂໍ້ມູນ";
-            renderChart();
+        // 4. ຟັງຊັນແຈ້ງເຕືອນ
+        function displayAlert(amount) {
+            const alertBox = document.getElementById('budgetAlert');
+            if (amount > BUDGET_LIMIT) {
+                alertBox.innerHTML = `
+                    <div class="alert-danger">
+                        <i class="bi bi-exclamation-triangle-fill" style="font-size: 24px;"></i>
+                        <div>
+                            ⚠️ ແຈ້ງເຕືອນ: ມື້ນີ້ໃຊ້ຈ່າຍເກີນງົບແລ້ວ! <br>
+                            ຍອດລວມມື້ນີ້: <b>${amount.toLocaleString()} ກີບ</b> (ເກີນມາ ${(amount - BUDGET_LIMIT).toLocaleString()} ກີບ)
+                        </div>
+                    </div>`;
+            } else if (amount > 0) {
+                alertBox.innerHTML = `
+                    <div class="alert-warning">
+                        <i class="bi bi-info-circle-fill"></i>
+                        ມື້ນີ້ໃຊ້ໄປແລ້ວ: ${amount.toLocaleString()} ກີບ (ຍັງເຫຼືອ ${(BUDGET_LIMIT - amount).toLocaleString()} ກີບ ກ່ອນຈະເກີນງົບ)
+                    </div>`;
+            } else {
+                alertBox.innerHTML = "";
+            }
         }
 
-        function renderChart() {
-            const ctx = document.getElementById('salesChart').getContext('2d');
+        // 5. ສ້າງກຣາບດ້ວຍ Chart.js
+        function renderChart(labels, data) {
+            const ctx = document.getElementById('expenseChart').getContext('2d');
             if (myChart) myChart.destroy();
+
+            // ສ້າງ Array ຂອງສີ (ແທ່ງໃດເກີນງົບ ຈະເປັນສີແດງ)
+            const colors = data.map(v => v > BUDGET_LIMIT ? 'rgba(220, 53, 69, 0.8)' : 'rgba(0, 123, 255, 0.6)');
+            const borderColors = data.map(v => v > BUDGET_LIMIT ? '#dc3545' : '#007bff');
 
             myChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: monthsLao,
-                    datasets: [{
-                        label: 'ຍອດຂາຍ (ກີບ)',
-                        data: monthlyData,
-                        backgroundColor: 'rgba(40, 167, 69, 0.7)',
-                        borderColor: '#28a745',
-                        borderWidth: 2,
-                        borderRadius: 8
-                    }]
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'ຍອດລາຍຈ່າຍປະຈຳວັນ',
+                            data: data,
+                            backgroundColor: colors,
+                            borderColor: borderColors,
+                            borderWidth: 1,
+                            borderRadius: 5
+                        },
+                        {
+                            label: 'ເສັ້ນງົບປະມານ (200k)',
+                            data: new Array(labels.length).fill(BUDGET_LIMIT),
+                            type: 'line',
+                            borderColor: '#dc3545',
+                            borderWidth: 2,
+                            borderDash: [10, 5],
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
-                    plugins: { legend: { display: false } },
+                    maintainAspectRatio: false,
                     scales: {
-                        y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString() } }
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: (v) => v.toLocaleString() + ' ₭' }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => ` ຈ່າຍ: ${ctx.raw.toLocaleString()} ກີບ`
+                            }
+                        }
                     }
                 }
             });
         }
 
-        initYearSelect();
-        loadChartData();
+        initPage();
     </script>
 </body>
 
