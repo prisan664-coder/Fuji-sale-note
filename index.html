@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>ລະບົບບັນທຶກລາຍຈ່າຍ (Full Version 2.1)</title>
+    <title>ລະບົບບັນທຶກລາຍຮັບ-ລາຍຈ່າຍ (Full Version 2.3)</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@100..900&display=swap" rel="stylesheet">
@@ -103,7 +103,7 @@
 
         .summary-card {
             flex: 1;
-            min-width: 250px;
+            min-width: 200px;
             padding: 20px;
             border-radius: 10px;
             background: white;
@@ -114,6 +114,16 @@
         #todayTotalTextCard {
             border-left-color: #dc3545;
             background: #ffebe6;
+        }
+
+        #incomeCard {
+            border-left-color: #28a745;
+            background: #eafaf1;
+        }
+
+        #todayIncomeCard {
+            border-left-color: #17a2b8;
+            background: #e1f5fe;
         }
 
         table {
@@ -216,21 +226,26 @@
 
 <body>
     <div class="navbar">
-        <a href="index.html"><i class="bi bi-house-door-fill"></i> ລະບົບຈັດການລາຍຈ່າຍປະຈຳວັນ</a>
+        <a href="index.html"><i class="bi bi-house-door-fill"></i> ລະບົບຈັດການລາຍຮັບ-ລາຍຈ່າຍປະຈຳວັນ</a>
         <a href="Note-graph.html"><i class="bi bi-house-door-fill"></i> ສະແດງກາຟ</a>
     </div>
 
     <div class="header-container">
         <div class="title-container">
-            <h2>💰 ລະບົບບັນທຶກລາຍຈ່າຍ</h2>
+            <h2>💰 ລະບົບບັນທຶກລາຍຮັບ-ລາຍຈ່າຍ</h2>
         </div>
         <span id="liveClock">Loading...</span>
     </div>
 
     <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
         <label>ວັນທີ:</label> <input type="date" id="dateInput"><br>
-        <label>ລາຍການ:</label> <input type="text" id="itemInput" placeholder="ຊື້ຫຍັງ?"><br>
-        <label>ລາຄາ:</label> <input type="number" id="priceInput" placeholder="0"><br>
+        <label>ປະເພດ:</label>
+        <select id="typeInput" style="width: 100px; padding: 8px;">
+            <option value="expense">ລາຍຈ່າຍ</option>
+            <option value="income">ລາຍຮັບ</option>
+        </select><br>
+        <label>ລາຍການ:</label> <input type="text" id="itemInput" placeholder="ຊື້ຫຍັງ? / ຮັບຈາກໃສ?"><br>
+        <label>ລາຄາ/ຈຳນວນເງິນ:</label> <input type="number" id="priceInput" placeholder="0"><br>
         <button onclick="saveExpense()" style="background:#007bff;color:white; font-weight: bold; width: 100%;">
             <i class="bi bi-plus-circle-fill"></i> ບັນທຶກລາຍການ
         </button>
@@ -242,12 +257,20 @@
     </div>
 
     <div class="summary-container">
+        <div class="summary-card" id="todayIncomeCard">
+            <h3>💵 ລວມລາຍຮັບວັນນີ້</h3>
+            <p id="todayIncomeText" style="font-size: 24px; font-weight: bold; color: #17a2b8;">0 ກີບ</p>
+        </div>
         <div class="summary-card" id="todayTotalTextCard">
             <h3>📈 ລວມລາຍຈ່າຍວັນນີ້</h3>
             <p id="todayTotalText" style="font-size: 24px; font-weight: bold; color: #dc3545;">0 ກີບ</p>
         </div>
+        <div class="summary-card" id="incomeCard">
+            <h3>💰 ລວມລາຍຮັບເດືອນນີ້</h3>
+            <p id="monthIncomeText" style="font-size: 24px; font-weight: bold; color: #28a745;">0 ກີບ</p>
+        </div>
         <div class="summary-card">
-            <h3>💰 ລວມທັງໝົດໃນເດືອນ</h3>
+            <h3>🏦 ເງິນຄົງເຫຼືອໃນເດືອນ</h3>
             <p id="totalText" style="font-size: 24px; font-weight: bold; color: #007bff;">0 ກີບ</p>
         </div>
     </div>
@@ -259,11 +282,12 @@
     <table>
         <thead>
             <tr>
-                <th>ລ/ດ</th>
+                <th>...</th>
                 <th>ວັນທີ</th>
                 <th>ເວລາ</th>
+                <th>ປະເພດ</th>
                 <th>ລາຍການ</th>
-                <th>ລາຄາ</th>
+                <th>ລາຄา</th>
                 <th>ແກ້ໄຂ</th>
                 <th>ລຶບ</th>
             </tr>
@@ -281,13 +305,17 @@
     </div>
 
     <div class="footer">
-        Update version 5.7 (with Advanced Device Log) - Version 2
+        Update version 5.7 (with Advanced Device Log) - Version 2 (Income/Expense Mod)
     </div>
 
     <div id="editBox">
         <div style="background: white; padding: 20px; border-radius: 8px; width: 300px;">
             <h3>ແກ້ໄຂ</h3>
             <input type="date" id="editDate" style="width:90%"><br>
+            <select id="editType" style="width:90%; padding: 10px; margin: 5px 0;">
+                <option value="expense">ລາຍຈ່າຍ</option>
+                <option value="income">ລາຍຮັບ</option>
+            </select><br>
             <input type="text" id="editItem" style="width:90%"><br>
             <input type="number" id="editPrice" style="width:90%"><br>
             <button onclick="saveEdit()" style="background: #007bff; color: white;">ບັນທຶກ</button>
@@ -357,6 +385,7 @@
 
         window.saveExpense = function () {
             const date = document.getElementById('dateInput').value;
+            const type = document.getElementById('typeInput').value;
             const item = document.getElementById('itemInput').value;
             const price = document.getElementById('priceInput').value;
             if (!date || !item || !price) return alert("ກະລຸນາກອກຂໍ້ມູນໃຫ້ຄົບ");
@@ -366,7 +395,7 @@
             const m = (dObj.getMonth() + 1).toString().padStart(2, '0');
 
             db.ref(`expenses/${y}/${m}`).push({
-                date, item, price: parseFloat(price), time: new Date().toLocaleTimeString('lo-LA')
+                date, type, item, price: parseFloat(price), time: new Date().toLocaleTimeString('lo-LA')
             }).then(() => {
                 showNotif("ບັນທຶກສຳເລັດ");
                 document.getElementById('itemInput').value = '';
@@ -376,44 +405,65 @@
         }
 
         function loadExpenses() {
-            expenseTable.innerHTML = "<tr><td colspan='7'>Loading...</td></tr>";
+            expenseTable.innerHTML = "<tr><td colspan='8'>Loading...</td></tr>";
             db.ref(`expenses/${currentYear}/${currentMonth}`).on('value', snap => {
                 expenseTable.innerHTML = "";
-                let total = 0, todayTotal = 0;
+                let totalIncome = 0, totalExpense = 0, todayExpense = 0, todayIncome = 0;
                 const today = new Date().toISOString().split('T')[0];
                 let count = 1;
 
                 if (!snap.exists()) {
+                    document.getElementById('todayIncomeText').innerText = "0 ກີບ";
+                    document.getElementById('monthIncomeText').innerText = "0 ກີບ";
                     document.getElementById('totalText').innerText = "0 ກີບ";
                     document.getElementById('todayTotalText').innerText = "0 ກີບ";
-                    return expenseTable.innerHTML = "<tr><td colspan='7'>ບໍ່ມີຂໍ້ມູນ</td></tr>";
+                    return expenseTable.innerHTML = "<tr><td colspan='8'>ບໍ່ມີຂໍ້ມູນ</td></tr>";
                 }
 
                 snap.forEach(child => {
                     const val = child.val();
 
-                    // --- 🟢 ຈຸດທີ່ປັບປຸງ: ປ້ອງກັນ undefined ---
                     const d = val.date || "-";
                     const t = val.time || "-";
+                    const type = val.type || "expense";
                     const itm = val.item || "-";
                     const prc = val.price || 0;
 
-                    total += prc;
-                    if (d === today) todayTotal += prc;
+                    let typeText = "ລາຍຈ່າຍ";
+                    let priceColor = "red";
+                    let prefix = "-";
+
+                    if (type === "income") {
+                        totalIncome += prc;
+                        if (d === today) todayIncome += prc;
+                        typeText = "ລາຍຮັບ";
+                        priceColor = "green";
+                        prefix = "+";
+                    } else {
+                        totalExpense += prc;
+                        if (d === today) todayExpense += prc;
+                    }
 
                     const row = `<tr>
                         <td>${count++}</td>
                         <td>${d}</td>
                         <td>${t}</td>
+                        <td style="color:${priceColor}">${typeText}</td>
                         <td>${itm}</td>
-                        <td style="color:red; font-weight:bold;">${prc.toLocaleString()}</td>
-                        <td><button onclick="openEdit('${child.key}', '${d}', '${itm}', ${prc})">Edit</button></td>
+                        <td style="color:${priceColor}; font-weight:bold;">${prefix}${prc.toLocaleString()}</td>
+                        <td><button onclick="openEdit('${child.key}', '${d}', '${type}', '${itm}', ${prc})">Edit</button></td>
                         <td><button onclick="openDelete('${child.key}')">Del</button></td>
                     </tr>`;
                     expenseTable.insertAdjacentHTML('afterbegin', row);
                 });
-                document.getElementById('totalText').innerText = total.toLocaleString() + " ກີບ";
-                document.getElementById('todayTotalText').innerText = todayTotal.toLocaleString() + " ກີບ";
+
+                let netBalance = totalIncome - totalExpense;
+
+                document.getElementById('todayIncomeText').innerText = todayIncome.toLocaleString() + " ກີບ";
+                document.getElementById('monthIncomeText').innerText = totalIncome.toLocaleString() + " ກີບ";
+                document.getElementById('todayTotalText').innerText = todayExpense.toLocaleString() + " ກີບ";
+                document.getElementById('totalText').innerText = netBalance.toLocaleString() + " ກີບ";
+                document.getElementById('totalText').style.color = netBalance >= 0 ? "#007bff" : "red";
             });
         }
 
@@ -430,16 +480,17 @@
 
         window.shareTo = function (p) {
             const url = window.location.href;
-            const text = "ລະບົບບັນທຶກລາຍຈ່າຍປະຈຳວັນ";
+            const text = "ລະບົົບບັນທຶກລາຍຮັບ-ລາຍຈ່າຍປະຈຳວັນ";
             if (p === 'fb') window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`);
             if (p === 'line') window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}`);
             if (p === 'wa') window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text + " " + url)}`);
         }
 
         let editKey = null;
-        window.openEdit = (k, d, it, p) => {
+        window.openEdit = (k, d, type, it, p) => {
             editKey = k;
             document.getElementById('editDate').value = d !== "-" ? d : "";
+            document.getElementById('editType').value = type;
             document.getElementById('editItem').value = it !== "-" ? it : "";
             document.getElementById('editPrice').value = p;
             document.getElementById('editBox').style.display = 'flex';
@@ -448,6 +499,7 @@
         window.saveEdit = () => {
             db.ref(`expenses/${currentYear}/${currentMonth}/${editKey}`).update({
                 date: document.getElementById('editDate').value,
+                type: document.getElementById('editType').value,
                 item: document.getElementById('editItem').value,
                 price: parseFloat(document.getElementById('editPrice').value)
             }).then(() => { document.getElementById('editBox').style.display = 'none'; showNotif("ແກ້ໄຂແລ້ວ"); });
@@ -462,7 +514,7 @@
         window.exportExcel = function () {
             let table = document.querySelector("table");
             let wb = XLSX.utils.table_to_book(table);
-            XLSX.writeFile(wb, `Expenses_${currentYear}_${currentMonth}.xlsx`);
+            XLSX.writeFile(wb, `Income_Expenses_${currentYear}_${currentMonth}.xlsx`);
         }
 
         initApp();
