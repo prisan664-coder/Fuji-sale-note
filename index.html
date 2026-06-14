@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>ລະບົບບັນທຶກລາຍຮັບ-ລາຍຈ່າຍ (Full Version 2.3)</title>
+    <title>ລະບົບບັນທຶກລາຍຮັບ-ລາຍຈ່າຍ (Full Version 2.4)</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@100..900&display=swap" rel="stylesheet">
@@ -143,6 +143,20 @@
             padding: 10px;
             text-align: center;
             border-bottom: 1px solid #eee;
+        }
+
+        /* ປັບແຕ່ງປຸ່ມໄອຄອນໃນຕາຕະລາງ */
+        .btn-icon {
+            background: none;
+            border: none;
+            padding: 5px 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-icon:hover {
+            transform: scale(1.2);
         }
 
         #editBox,
@@ -287,7 +301,7 @@
                 <th>ເວລາ</th>
                 <th>ປະເພດ</th>
                 <th>ລາຍການ</th>
-                <th>ລາຄา</th>
+                <th>ລາຄາ</th>
                 <th>ແກ້ໄຂ</th>
                 <th>ລຶບ</th>
             </tr>
@@ -372,7 +386,7 @@
         }
 
         function getLaoMonth(m) {
-            const months = ["ມັງກອນ", "ກຸມພາ", "ມີນາ", "ເມສາ", "ພຶດສະພາ", "ມິຖຸນາ", "ກໍລະກົດ", "ສິງຫາ", "ກັນຍາ", "ຕຸລາ", "ພະຈິກ", "ທັນວາ"];
+            const months = ["ມັງກອນ", "ກຸມພາ", "ມີນາ", "ເມສາ", "ພຶດສະພາ", "ມິຖຸນາ", "ກໍລະກົດ", "ສິງຫາ", "ກັນຍາ", "ຕຸລາ", "ພະຈິກ", "ທັນວา"];
             return months[parseInt(m) - 1];
         }
 
@@ -444,6 +458,7 @@
                         if (d === today) todayExpense += prc;
                     }
 
+                    // ຈຸດທີ່ປ່ຽນແປງ: ປ່ຽນປຸ່ມ Edit/Del ເປັນໄອຄອນ 📝 ແລະ 🗑️
                     const row = `<tr>
                         <td>${count++}</td>
                         <td>${d}</td>
@@ -451,8 +466,8 @@
                         <td style="color:${priceColor}">${typeText}</td>
                         <td>${itm}</td>
                         <td style="color:${priceColor}; font-weight:bold;">${prefix}${prc.toLocaleString()}</td>
-                        <td><button onclick="openEdit('${child.key}', '${d}', '${type}', '${itm}', ${prc})">Edit</button></td>
-                        <td><button onclick="openDelete('${child.key}')">Del</button></td>
+                        <td><button class="btn-icon" onclick="openEdit('${child.key}', '${d}', '${type}', '${itm}', ${prc})">📝</button></td>
+                        <td><button class="btn-icon" onclick="openDelete('${child.key}')">🗑️</button></td>
                     </tr>`;
                     expenseTable.insertAdjacentHTML('afterbegin', row);
                 });
@@ -480,7 +495,7 @@
 
         window.shareTo = function (p) {
             const url = window.location.href;
-            const text = "ລະບົົບບັນທຶກລາຍຮັບ-ລາຍຈ່າຍປະຈຳວັນ";
+            const text = "ລະບົບບັນທຶກລາຍຮັບ-ລາຍຈ່າຍປະຈຳວັນ";
             if (p === 'fb') window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`);
             if (p === 'line') window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}`);
             if (p === 'wa') window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text + " " + url)}`);
