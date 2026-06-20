@@ -3,12 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>ລະບົບບັນທຶກລາຍຮັບ-ລາຍຈ່າຍ (Full Version 2.4)</title>
+    <title>ລະບົບບັນທຶກລາຍຮັບ-ລາຍຈ່າຍ (Full Version 2.5)</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@100..900&display=swap" rel="stylesheet">
     <style>
-        /* CSS ທັງໝົດຄືເກົ່າ */
         body {
             font-family: 'Noto Sans Lao', sans-serif;
             padding: 20px;
@@ -96,14 +95,14 @@
 
         .summary-container {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             margin-bottom: 25px;
             flex-wrap: wrap;
         }
 
         .summary-card {
             flex: 1;
-            min-width: 200px;
+            min-width: 180px;
             padding: 20px;
             border-radius: 10px;
             background: white;
@@ -126,6 +125,11 @@
             background: #e1f5fe;
         }
 
+        #monthExpenseCard {
+            border-left-color: #fd7e14;
+            background: #fff3cd;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -145,7 +149,6 @@
             border-bottom: 1px solid #eee;
         }
 
-        /* ປັບແຕ່ງປຸ່ມໄອຄອນໃນຕາຕະລາງ */
         .btn-icon {
             background: none;
             border: none;
@@ -261,7 +264,7 @@
         <label>ລາຍການ:</label> <input type="text" id="itemInput" placeholder="ຊື້ຫຍັງ? / ຮັບຈາກໃສ?"><br>
         <label>ລາຄາ/ຈຳນວນເງິນ:</label> <input type="number" id="priceInput" placeholder="0"><br>
         <button onclick="saveExpense()" style="background:#007bff;color:white; font-weight: bold; width: 100%;">
-            <i class="bi bi-plus-circle-fill"></i> ບັນທຶກລາຍການ
+            <i class="bi bi-plus-circle-fill"></i> 融入ບັນທຶກລາຍການ
         </button>
     </div>
 
@@ -273,19 +276,23 @@
     <div class="summary-container">
         <div class="summary-card" id="todayIncomeCard">
             <h3>💵 ລວມລາຍຮັບວັນນີ້</h3>
-            <p id="todayIncomeText" style="font-size: 24px; font-weight: bold; color: #17a2b8;">0 ກີບ</p>
+            <p id="todayIncomeText" style="font-size: 22px; font-weight: bold; color: #17a2b8;">0 ກີບ</p>
         </div>
         <div class="summary-card" id="todayTotalTextCard">
             <h3>📈 ລວມລາຍຈ່າຍວັນນີ້</h3>
-            <p id="todayTotalText" style="font-size: 24px; font-weight: bold; color: #dc3545;">0 ກີບ</p>
+            <p id="todayTotalText" style="font-size: 22px; font-weight: bold; color: #dc3545;">0 ກີບ</p>
         </div>
         <div class="summary-card" id="incomeCard">
             <h3>💰 ລວມລາຍຮັບເດືອນນີ້</h3>
-            <p id="monthIncomeText" style="font-size: 24px; font-weight: bold; color: #28a745;">0 ກີບ</p>
+            <p id="monthIncomeText" style="font-size: 22px; font-weight: bold; color: #28a745;">0 ກີບ</p>
+        </div>
+        <div class="summary-card" id="monthExpenseCard">
+            <h3>🧮 ລວມລາຍຈ່າຍເດືອນນີ້</h3>
+            <p id="monthExpenseText" style="font-size: 22px; font-weight: bold; color: #fd7e14;">0 ກີບ</p>
         </div>
         <div class="summary-card">
             <h3>🏦 ເງິນຄົງເຫຼືອໃນເດືອນ</h3>
-            <p id="totalText" style="font-size: 24px; font-weight: bold; color: #007bff;">0 ກີບ</p>
+            <p id="totalText" style="font-size: 22px; font-weight: bold; color: #007bff;">0 ກີບ</p>
         </div>
     </div>
 
@@ -319,7 +326,7 @@
     </div>
 
     <div class="footer">
-        Update version 5.7 (with Advanced Device Log) - Version 2 (Income/Expense Mod)
+        Update version 5.8 (with Complete Monthly Expense) - Version 2 (Income/Expense Mod)
     </div>
 
     <div id="editBox">
@@ -386,7 +393,7 @@
         }
 
         function getLaoMonth(m) {
-            const months = ["ມັງກອນ", "ກຸມພາ", "ມີນາ", "ເມສາ", "ພຶດສະພາ", "ມິຖຸນາ", "ກໍລະກົດ", "ສິງຫາ", "ກັນຍາ", "ຕຸລາ", "ພະຈິກ", "ທັນວา"];
+            const months = ["ມັງກອນ", "ກຸມພາ", "ມີນາ", "ເມສາ", "ພຶດສະພາ", "ມິຖຸນາ", "ກໍລະກົດ", "ສິງຫາ", "ກັນຍາ", "ຕຸລາ", "ພະຈິກ", "ທັນວາ"];
             return months[parseInt(m) - 1];
         }
 
@@ -429,6 +436,7 @@
                 if (!snap.exists()) {
                     document.getElementById('todayIncomeText').innerText = "0 ກີບ";
                     document.getElementById('monthIncomeText').innerText = "0 ກີບ";
+                    document.getElementById('monthExpenseText').innerText = "0 ກີບ";
                     document.getElementById('totalText').innerText = "0 ກີບ";
                     document.getElementById('todayTotalText').innerText = "0 ກີບ";
                     return expenseTable.innerHTML = "<tr><td colspan='8'>ບໍ່ມີຂໍ້ມູນ</td></tr>";
@@ -450,7 +458,7 @@
                     if (type === "income") {
                         totalIncome += prc;
                         if (d === today) todayIncome += prc;
-                        typeText = "ລາຍຮັບ";
+                        typeText = "ລายຮັບ";
                         priceColor = "green";
                         prefix = "+";
                     } else {
@@ -458,7 +466,6 @@
                         if (d === today) todayExpense += prc;
                     }
 
-                    // ຈຸດທີ່ປ່ຽນແປງ: ປ່ຽນປຸ່ມ Edit/Del ເປັນໄອຄອນ 📝 ແລະ 🗑️
                     const row = `<tr>
                         <td>${count++}</td>
                         <td>${d}</td>
@@ -476,6 +483,7 @@
 
                 document.getElementById('todayIncomeText').innerText = todayIncome.toLocaleString() + " ກີບ";
                 document.getElementById('monthIncomeText').innerText = totalIncome.toLocaleString() + " ກີບ";
+                document.getElementById('monthExpenseText').innerText = totalExpense.toLocaleString() + " ກີບ";
                 document.getElementById('todayTotalText').innerText = todayExpense.toLocaleString() + " ກີບ";
                 document.getElementById('totalText').innerText = netBalance.toLocaleString() + " ກີບ";
                 document.getElementById('totalText').style.color = netBalance >= 0 ? "#007bff" : "red";
