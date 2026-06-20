@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="lo">
 
@@ -134,7 +133,7 @@
     </div>
 
     <div class="container">
-        <h2><i class="bi bi-graph-up-arrow"></i> ວິເຄາະລາຍຈ່າຍປະຈຳວັນ</h2>
+        <h2><i class="bi bi-graph-up-arrow"></i> ວິເຄາະລາຍຮັບ ແລະ ລາຍຈ່າຍປະຈຳວັນ</h2>
 
         <div id="budgetAlert"></div>
 
@@ -149,14 +148,14 @@
     </div>
 
     <div class="footer">
-        Update version 5.7 (Advanced Graph & Budget Alert)
+        Update version 5.9 (Dual Bar Chart - Income & Expense Mode)
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
     <script>
-        // 1. Firebase Config (ໃຊ້ຕົວດຽວກັນກັບໜ້າຫຼັກ)
+        // 1. Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyC8b0h8yyTo5th6UMrI4_dKUB1ZnvCwZBw",
             authDomain: "fuji-mobile-shop.firebaseapp.com",
@@ -176,7 +175,7 @@
         function initPage() {
             const monthSelect = document.getElementById('monthSelect');
             const now = new Date();
-            for (let y = 2025; y <= 2026; y++) {
+            for (let y = 2025; y <= 2030; y++) {
                 for (let m = 1; m <= 12; m++) {
                     const mStr = m.toString().padStart(2, '0');
                     const opt = document.createElement('option');
@@ -189,12 +188,15 @@
             updateGraph();
         }
 
-        // 3. ດຶງຂໍ້ມູນຈາກ Firebase
+        // 3. ດຶງຂໍ້ມູນຈາກ Firebase ແລະ ແຍກປະເພດ ລາຍຮັບ/ລາຍຈ່າຍ
         function updateGraph() {
             const [year, month] = document.getElementById('monthSelect').value.split('/');
 
             db.ref(`expenses/${year}/${month}`).on('value', snapshot => {
-                const dailyTotals = {};
+                const dailyExpenses = {}; // ເກັບຍອດລາຍຈ່າຍແຍກຕາມວັນ
+                const dailyIncomes = {};  // ເກັບຍອດລາຍຮັບແຍກຕາມວັນ
+                const allDates = new Set(); // ເກັບວັນທີທັງໝົດທີ່ມີການບັນທຶກ
+
                 const todayStr = new Date().toISOString().split('T')[0];
                 let todayExpense = 0;
 
@@ -203,23 +205,34 @@
                         const val = child.val();
                         const d = val.date;
                         const p = parseFloat(val.price) || 0;
-                        dailyTotals[d] = (dailyTotals[d] || 0) + p;
-                        if (d === todayStr) todayExpense += p;
+                        const type = val.type || "expense"; // ຖ້າບໍ່ມີໃຫ້ຖືວ່າເປັນລາຍຈ່າຍ
+
+                        allDates.add(d);
+
+                        if (type === "income") {
+                            dailyIncomes[d] = (dailyIncomes[d] || 0) + p;
+                        } else {
+                            dailyExpenses[d] = (dailyExpenses[d] || 0) + p;
+                            if (d === todayStr) todayExpense += p;
+                        }
                     });
                 }
 
-                // ສະແດງການແຈ້ງເຕືອນ
+                // ສະແດງການແຈ້ງເຕືອນລາຍຈ່າຍເກີນງົບມື້ນີ້
                 displayAlert(todayExpense);
 
-                // ກຽມຂໍ້ມູນສຳລັບກຣາບ
-                const labels = Object.keys(dailyTotals).sort();
-                const dataValues = labels.map(label => dailyTotals[label]);
+                // ຈັດຮຽງວັນທີຈາກນ້ອຍໄປຫາຫຼາຍ
+                const sortedLabels = Array.from(allDates).sort();
 
-                renderChart(labels, dataValues);
+                // ກຽມອາເຣຂໍ້ມູນໃຫ້ກົງກັບວັນທີ
+                const expenseValues = sortedLabels.map(date => dailyExpenses[date] || 0);
+                const incomeValues = sortedLabels.map(date => dailyIncomes[date] || 0);
+
+                renderChart(sortedLabels, incomeValues, expenseValues);
             });
         }
 
-        // 4. ຟັງຊັນແຈ້ງເຕືອນ
+        // 4. ຟັງຊັນແຈ້ງເຕືອນ (ຄິດໄລ່ສະເພາະລາຍຈ່າຍ)
         function displayAlert(amount) {
             const alertBox = document.getElementById('budgetAlert');
             if (amount > BUDGET_LIMIT) {
@@ -242,14 +255,10 @@
             }
         }
 
-        // 5. ສ້າງກຣາບດ້ວຍ Chart.js
-        function renderChart(labels, data) {
+        // 5. ສ້າງກຣາບແທ່ງຄູ່ (ລາຍຮັບ-ລາຍຈ່າຍ) ດ້ວຍ Chart.js
+        function renderChart(labels, incomeData, expenseData) {
             const ctx = document.getElementById('expenseChart').getContext('2d');
             if (myChart) myChart.destroy();
-
-            // ສ້າງ Array ຂອງສີ (ແທ່ງໃດເກີນງົບ ຈະເປັນສີແດງ)
-            const colors = data.map(v => v > BUDGET_LIMIT ? 'rgba(220, 53, 69, 0.8)' : 'rgba(0, 123, 255, 0.6)');
-            const borderColors = data.map(v => v > BUDGET_LIMIT ? '#dc3545' : '#007bff');
 
             myChart = new Chart(ctx, {
                 type: 'bar',
@@ -257,20 +266,28 @@
                     labels: labels,
                     datasets: [
                         {
-                            label: 'ຍອດລາຍຈ່າຍປະຈຳວັນ',
-                            data: data,
-                            backgroundColor: colors,
-                            borderColor: borderColors,
+                            label: '📈 ຍອດລາຍຮັບປະຈຳວັນ',
+                            data: incomeData,
+                            backgroundColor: 'rgba(40, 167, 69, 0.6)', // ສີຂຽວ
+                            borderColor: '#28a745',
                             borderWidth: 1,
                             borderRadius: 5
                         },
                         {
-                            label: 'ເສັ້ນງົບປະມານ (200k)',
+                            label: '📉 ຍອດລາຍຈ່າຍປະຈຳວັນ',
+                            data: expenseData,
+                            backgroundColor: 'rgba(220, 53, 69, 0.6)', // ສີແດງ
+                            borderColor: '#dc3545',
+                            borderWidth: 1,
+                            borderRadius: 5
+                        },
+                        {
+                            label: 'ເສັ້ນງົບປະມານຈ່າຍ (200k)',
                             data: new Array(labels.length).fill(BUDGET_LIMIT),
                             type: 'line',
-                            borderColor: '#dc3545',
+                            borderColor: '#fd7e14', // ເສັ້ນເຕືອນສີສົ້ມ/ແດງ
                             borderWidth: 2,
-                            borderDash: [10, 5],
+                            borderDash: [8, 4],
                             pointRadius: 0,
                             fill: false
                         }
@@ -288,7 +305,12 @@
                     plugins: {
                         tooltip: {
                             callbacks: {
-                                label: (ctx) => ` ຈ່າຍ: ${ctx.raw.toLocaleString()} ກີບ`
+                                label: (ctx) => {
+                                    // ກຳນົດຄຳນຳໜ້າໃຫ້ຖືກຕາມ Dataset
+                                    let prefix = ctx.datasetIndex === 0 ? ' ຮັບ: ' : ' ຈ່າຍ: ';
+                                    if (ctx.dataset.type === 'line') prefix = ' ງົບຈ່າຍ: ';
+                                    return prefix + ctx.raw.toLocaleString() + " ກີບ";
+                                }
                             }
                         }
                     }
