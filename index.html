@@ -21,6 +21,17 @@
             margin-bottom: 25px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
         }
 
         .navbar a {
@@ -35,6 +46,33 @@
 
         .navbar a:hover {
             background: #0056b3;
+        }
+
+        .lang-container {
+            display: flex;
+            gap: 5px;
+        }
+
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .lang-btn:hover {
+            background: white;
+            color: #007bff;
+        }
+
+        .lang-btn.active {
+            background: white;
+            color: #007bff;
+            font-weight: bold;
         }
 
         .header-container {
@@ -243,60 +281,69 @@
 
 <body>
     <div class="navbar">
-        <a href="index.html"><i class="bi bi-house-door-fill"></i> ລະບົບຈັດການລາຍຮັບ-ລາຍຈ່າຍປະຈຳວັນ</a>
-        <a href="Note-graph.html"><i class="bi bi-house-door-fill"></i> ສະແດງກາຟ</a>
+        <div class="navbar-links">
+            <a href="index.html" id="navHome"><i class="bi bi-house-door-fill"></i> ລະບົບຈັດການລາຍຮັບ-ລາຍຈ່າຍປະຈຳວັນ</a>
+            <a href="Note-graph.html" id="navGraph"><i class="bi bi-house-door-fill"></i> ສະແດງກາຟ</a>
+        </div>
+        <div class="lang-container">
+            <button class="lang-btn active" onclick="changeLanguage('lo')">🇱🇦 ພາສາລາວ</button>
+            <button class="lang-btn" onclick="changeLanguage('th')">🇹🇭 ภาษาไทย</button>
+            <button class="lang-btn" onclick="changeLanguage('vi')">🇻🇳 Tiếng Việt</button>
+            <button class="lang-btn" onclick="changeLanguage('en')">🇺🇸 English</button>
+        </div>
     </div>
 
     <div class="header-container">
         <div class="title-container">
-            <h2>💰 ລະບົບບັນທຶກລາຍຮັບ-ລາຍຈ່າຍ</h2>
+            <h2 id="mainTitle">💰 ລະບົບບັນທຶກລາຍຮັບ-ລາຍຈ່າຍ</h2>
         </div>
         <span id="liveClock">Loading...</span>
     </div>
 
     <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-        <label>ວັນທີ:</label> <input type="date" id="dateInput"><br>
-        <label>ປະເພດ:</label>
+        <label id="lblDate">ວັນທີ:</label> <input type="date" id="dateInput"><br>
+        <label id="lblType">ປະເພດ:</label>
         <select id="typeInput" style="width: 100px; padding: 8px;">
-            <option value="expense">ລາຍຈ່າຍ</option>
-            <option value="income">ລາຍຮັບ</option>
+            <option value="expense" id="optExpense">ລາຍຈ່າຍ</option>
+            <option value="income" id="optIncome">ລາຍຮັບ</option>
         </select><br>
-        <label>ລາຍການ:</label> <input type="text" id="itemInput" placeholder="ຊື້ຫຍັງ? / ຮັບຈາກໃສ?"><br>
-        <label>ລາຄາ/ຈຳນວນເງິນ:</label> <input type="number" id="priceInput" placeholder="0"><br>
-        <button onclick="saveExpense()" style="background:#007bff;color:white; font-weight: bold; width: 100%;">
+        <label id="lblItem">ລາຍການ:</label> <input type="text" id="itemInput" placeholder="ຊື້ຫຍັງ? / ຮັບຈາກໃສ?"><br>
+        <label id="lblPrice">ລາຄາ/ຈຳນວນເງິນ:</label> <input type="number" id="priceInput" placeholder="0"><br>
+        <button onclick="saveExpense()" style="background:#007bff;color:white; font-weight: bold; width: 100%;"
+            id="btnSave">
             <i class="bi bi-plus-circle-fill"></i> 融入ບັນທຶກລາຍການ
         </button>
     </div>
 
     <div class="filter-section">
-        <label>ເລືອກເດືອນ/ປີ:</label>
+        <label id="lblFilter">ເລືອກເດືອນ/ປີ:</label>
         <select id="monthSelect" onchange="loadMonth()"></select>
     </div>
 
     <div class="summary-container">
         <div class="summary-card" id="todayIncomeCard">
-            <h3>💵 ລວມລາຍຮັບວັນນີ້</h3>
+            <h3 id="cardTodayIncome">💵 ລວມລາຍຮັບວັນນີ້</h3>
             <p id="todayIncomeText" style="font-size: 22px; font-weight: bold; color: #17a2b8;">0 ກີບ</p>
         </div>
         <div class="summary-card" id="todayTotalTextCard">
-            <h3>📈 ລວມລາຍຈ່າຍວັນນີ້</h3>
+            <h3 id="cardTodayExpense">📈 ລວມລາຍຈ່າຍວันນີ້</h3>
             <p id="todayTotalText" style="font-size: 22px; font-weight: bold; color: #dc3545;">0 ກີບ</p>
         </div>
         <div class="summary-card" id="incomeCard">
-            <h3>💰 ລວມລາຍຮັບເດືອນນີ້</h3>
+            <h3 id="cardMonthIncome">💰 ລວມລາຍຮັບເດືອນນີ້</h3>
             <p id="monthIncomeText" style="font-size: 22px; font-weight: bold; color: #28a745;">0 ກີບ</p>
         </div>
         <div class="summary-card" id="monthExpenseCard">
-            <h3>🧮 ລວມລາຍຈ່າຍເດືອນນີ້</h3>
+            <h3 id="cardMonthExpense">🧮 ລວມລາຍຈ່າຍເດືອນນີ້</h3>
             <p id="monthExpenseText" style="font-size: 22px; font-weight: bold; color: #fd7e14;">0 ກີບ</p>
         </div>
         <div class="summary-card">
-            <h3>🏦 ເງິນຄົງເຫຼືອໃນເດືອນ</h3>
-            <p id="totalText" style="font-size: 22px; font-weight: bold; color: #007bff;">0 ກີບ</p>
+            <h3 id="cardBalance">🏦 ເງິນຄົງເຫຼືອໃນເດືອນ</h3>
+            <p id="totalText" style="font-size: 22px; font-weight: bold; color: #007bff;">0 ກีບ</p>
         </div>
     </div>
 
-    <button onclick="exportExcel()" style="background: #28a745; color: white;">
+    <button onclick="exportExcel()" style="background: #28a745; color: white;" id="btnExport">
         <i class="bi bi-file-earmark-spreadsheet"></i> Export Excel
     </button>
 
@@ -304,20 +351,20 @@
         <thead>
             <tr>
                 <th>...</th>
-                <th>ວັນທີ</th>
-                <th>ເວລາ</th>
-                <th>ປະເພດ</th>
-                <th>ລາຍການ</th>
-                <th>ລາຄາ</th>
-                <th>ແກ້ໄຂ</th>
-                <th>ລຶບ</th>
+                <th id="thDate">ວັນທີ</th>
+                <th id="thTime">ເວລາ</th>
+                <th id="thType">ປະເພດ</th>
+                <th id="thItem">ລາຍການ</th>
+                <th id="thPrice">ລາຄາ</th>
+                <th id="thEdit">ແກ້ໄຂ</th>
+                <th id="thDelete">ລຶບ</th>
             </tr>
         </thead>
         <tbody id="expenseTable"></tbody>
     </table>
 
     <div class="share-container">
-        <h4><i class="bi bi-share-fill"></i> ແບ່ງປັນໜ້າເວັບນີ້ (Share)</h4>
+        <h4 id="shareTitle"><i class="bi bi-share-fill"></i> ແບ່ງປັນໜ້າເວັບນີ້ (Share)</h4>
         <div class="share-buttons">
             <a href="#" onclick="shareTo('fb')" class="share-btn fb"><i class="bi bi-facebook"></i> Facebook</a>
             <a href="#" onclick="shareTo('line')" class="share-btn line"><i class="bi bi-line"></i> Line</a>
@@ -331,24 +378,24 @@
 
     <div id="editBox">
         <div style="background: white; padding: 20px; border-radius: 8px; width: 300px;">
-            <h3>ແກ້ໄຂ</h3>
+            <h3 id="editBoxTitle">ແກ້ໄຂ</h3>
             <input type="date" id="editDate" style="width:90%"><br>
             <select id="editType" style="width:90%; padding: 10px; margin: 5px 0;">
-                <option value="expense">ລາຍຈ່າຍ</option>
-                <option value="income">ລາຍຮັບ</option>
+                <option value="expense" id="optEditExpense">ລາຍຈ່າຍ</option>
+                <option value="income" id="optEditIncome">ລາຍຮັບ</option>
             </select><br>
             <input type="text" id="editItem" style="width:90%"><br>
             <input type="number" id="editPrice" style="width:90%"><br>
-            <button onclick="saveEdit()" style="background: #007bff; color: white;">ບັນທຶກ</button>
-            <button onclick="closeEdit()">ຍົກເລີກ</button>
+            <button onclick="saveEdit()" style="background: #007bff; color: white;" id="btnEditSave">ບັນທຶກ</button>
+            <button onclick="closeEdit()" id="btnEditCancel">ຍົກເລີກ</button>
         </div>
     </div>
 
     <div id="deleteConfirmBox">
         <div style="background: white; padding: 20px; border-radius: 8px;">
-            <h3>ຢືນຢັນການລົບ?</h3>
-            <button onclick="confirmDelete()" style="background: red; color: white;">ລົບ</button>
-            <button onclick="cancelDelete()">ຍົກເລີກ</button>
+            <h3 id="delBoxTitle">ຢືນຢັນການລົບ?</h3>
+            <button onclick="confirmDelete()" style="background: red; color: white;" id="btnDelConfirm">ລົບ</button>
+            <button onclick="cancelDelete()" id="btnDelCancel">ຍົກເລີກ</button>
         </div>
     </div>
 
@@ -374,6 +421,131 @@
         const monthSelect = document.getElementById("monthSelect");
         const expenseTable = document.getElementById("expenseTable");
 
+        // ระบบคลังคำแปลหลายภาษา (Lao, Thai, Vietnamese, English)
+        let currentLang = 'lo';
+        const translations = {
+            lo: {
+                navHome: " ລະບົບຈັດການລາຍຮັບ-ລາຍຈ່າຍປະຈຳວັນ", navGraph: " ສະແດງກາຟ", mainTitle: "💰 ລະບົບບັນທຶກລາຍຮັບ-ລາຍຈ່າຍ",
+                lblDate: "ວັນທີ:", lblType: "ປະເພດ:", optExpense: "ລາຍຈ່າຍ", optIncome: "ລາຍຮັບ", lblItem: "ລາຍການ:", lblPrice: "ລາຄາ/ຈຳນວນເງິນ:",
+                placeholderItem: "ຊື້ຫຍັງ? / ຮັບຈາກໃສ?", btnSave: " 融入ບັນທຶກລາຍການ", lblFilter: "ເລືອກເດືອນ/ປີ:",
+                cardTodayIncome: "💵 ລວມລາຍຮັບວັນນີ້", cardTodayExpense: "📈 ລວມລາຍຈ່າຍວັນນີ້", cardMonthIncome: "💰 ລວມລາຍຮັບເດືອນນີ້",
+                cardMonthExpense: "🧮 ລວມລາຍຈ່າຍເດືອນນີ້", cardBalance: "🏦 ເງິນຄົງເຫຼືອໃນເດືອນ", btnExport: " Export Excel",
+                thDate: "ວັນທີ", thTime: "ເວລາ", thType: "ປະເພດ", thItem: "ລາຍການ", thPrice: "ລາຄา", thEdit: "ແກ້ໄຂ", thDelete: "ລຶບ",
+                shareTitle: " ແບ່ງປັນໜ້າເວັບນີ້ (Share)", editBoxTitle: "ແກ້ໄຂ", btnEditSave: "ບັນທຶກ", btnEditCancel: "ຍົກເລີກ",
+                delBoxTitle: "ຢືນຢັນການລົບ?", btnDelConfirm: "ລົບ", btnDelCancel: "ຍົກເລີກ", currency: " ກີບ", alertFill: "ກະລຸນາກອກຂໍ້ມູນໃຫ້ຄົບ",
+                notifSave: "ບັນທຶກສຳເລັດ", notifEdit: "ແກ້ໄຂແລ້ວ", noData: "ບໍ່ມີຂໍ້ມູນ", txtIncome: "ລາຍຮັບ", txtExpense: "ລາຍຈ່າຍ"
+            },
+            th: {
+                navHome: " ระบบจัดการรายรับ-รายจ่ายประจำวัน", navGraph: " แสดงกราฟ", mainTitle: "💰 ระบบบันทึกรายรับ-รายจ่าย",
+                lblDate: "วันที่:", lblType: "ประเภท:", optExpense: "รายจ่าย", optIncome: "รายรับ", lblItem: "รายการ:", lblPrice: "ราคา/จำนวนเงิน:",
+                placeholderItem: "ซื้ออะไร? / รับจากไหน?", btnSave: " บันทึกรายการ", lblFilter: "เลือกเดือน/ปี:",
+                cardTodayIncome: "💵 รวมรายรับวันนี้", cardTodayExpense: "📈 รวมรายจ่ายวันนี้", cardMonthIncome: "💰 รวมรายรับเดือนนี้",
+                cardMonthExpense: "🧮 รวมรายจ่ายเดือนนี้", cardBalance: "🏦 เงินคงเหลือในเดือน", btnExport: " ส่งออก Excel",
+                thDate: "วันที่", thTime: "เวลา", thType: "ประเภท", thItem: "รายการ", thPrice: "ราคา", thEdit: "แก้ไข", thDelete: "ลบ",
+                shareTitle: " แชร์หน้านี้ (Share)", editBoxTitle: "แก้ไขข้อมูล", btnEditSave: "บันทึก", btnEditCancel: "ยกเลิก",
+                delBoxTitle: "ยืนยันการลบข้อมูล?", btnDelConfirm: "ลบ", btnDelCancel: "ยกเลิก", currency: " กีบ", alertFill: "กรุณากรอกข้อมูลให้ครบถ้วน",
+                notifSave: "บันทึกข้อมูลสำเร็จ", notifEdit: "แก้ไขข้อมูลเรียบร้อย", noData: "ไม่มีข้อมูล", txtIncome: "รายรับ", txtExpense: "รายจ่าย"
+            },
+            vi: {
+                navHome: " Quản lý thu chi hàng ngày", navGraph: " Hiển thị biểu đồ", mainTitle: "💰 Hệ thống ghi chép thu chi",
+                lblDate: "Ngày:", lblType: "Loại:", optExpense: "Khoản chi", optIncome: "Khoản thu", lblItem: "Danh mục:", lblPrice: "Giá/Số tiền:",
+                placeholderItem: "Mua gì? / Nhận từ đâu?", btnSave: " Lưu danh mục", lblFilter: "Chọn Tháng/Năm:",
+                cardTodayIncome: "💵 Tổng thu hôm nay", cardTodayExpense: "📈 Tổng chi hôm nay", cardMonthIncome: "💰 Tổng thu tháng này",
+                cardMonthExpense: "🧮 Tổng chi tháng này", cardBalance: "🏦 Số dư trong tháng", btnExport: " Xuất Excel",
+                thDate: "Ngày", thTime: "Thời gian", thType: "Loại", thItem: "Danh mục", thPrice: "Số tiền", thEdit: "Sửa", thDelete: "Xóa",
+                shareTitle: " Chia sẻ trang này (Share)", editBoxTitle: "Chỉnh sửa", btnEditSave: "Lưu", btnEditCancel: "Hủy bỏ",
+                delBoxTitle: "Xác nhận xóa?", btnDelConfirm: "Xóa", btnDelCancel: "Hủy bỏ", currency: " Kip", alertFill: "Vui lòng nhập đầy đủ thông tin",
+                notifSave: "Đã lưu thành công", notifEdit: "Đã cập nhật", noData: "Không có dữ liệu", txtIncome: "Khoản thu", txtExpense: "Khoản chi"
+            },
+            en: {
+                navHome: " Daily Income-Expense System", navGraph: " Show Graphs", mainTitle: "💰 Income-Expense Recorder",
+                lblDate: "Date:", lblType: "Type:", optExpense: "Expense", optIncome: "Income", lblItem: "Item Name:", lblPrice: "Price/Amount:",
+                placeholderItem: "Bought what? / Income from?", btnSave: " Add Record", lblFilter: "Select Month/Year:",
+                cardTodayIncome: "💵 Today's Total Income", cardTodayExpense: "📈 Today's Total Expense", cardMonthIncome: "💰 Month's Total Income",
+                cardMonthExpense: "🧮 Month's Total Expense", cardBalance: "🏦 Monthly Remaining Balance", btnExport: " Export Excel",
+                thDate: "Date", thTime: "Time", thType: "Type", thItem: "Item", thPrice: "Price", thEdit: "Edit", thDelete: "Delete",
+                shareTitle: " Share this webpage", editBoxTitle: "Edit Record", btnEditSave: "Save Changes", btnEditCancel: "Cancel",
+                delBoxTitle: "Confirm Delete?", btnDelConfirm: "Delete", btnDelCancel: "Cancel", currency: " Kip", alertFill: "Please fill in all fields",
+                notifSave: "Saved Successfully", notifEdit: "Updated Successfully", noData: "No Data Found", txtIncome: "Income", txtExpense: "Expense"
+            }
+        };
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const t = translations[lang];
+
+            // อัปเดตข้อความอินเทอร์เฟซต่างๆ
+            document.getElementById('navHome').innerHTML = `<i class="bi bi-house-door-fill"></i>` + t.navHome;
+            document.getElementById('navGraph').innerHTML = `<i class="bi bi-house-door-fill"></i>` + t.navGraph;
+            document.getElementById('mainTitle').innerText = t.mainTitle;
+            document.getElementById('lblDate').innerText = t.lblDate;
+            document.getElementById('lblType').innerText = t.lblType;
+            document.getElementById('optExpense').innerText = t.optExpense;
+            document.getElementById('optIncome').innerText = t.optIncome;
+            document.getElementById('lblItem').innerText = t.lblItem;
+            document.getElementById('itemInput').placeholder = t.placeholderItem;
+            document.getElementById('lblPrice').innerText = t.lblPrice;
+            document.getElementById('btnSave').innerHTML = `<i class="bi bi-plus-circle-fill"></i> ` + t.btnSave;
+            document.getElementById('lblFilter').innerText = t.lblFilter;
+
+            document.getElementById('cardTodayIncome').innerText = t.cardTodayIncome;
+            document.getElementById('cardTodayExpense').innerText = t.cardTodayExpense;
+            document.getElementById('cardMonthIncome').innerText = t.cardMonthIncome;
+            document.getElementById('cardMonthExpense').innerText = t.cardMonthExpense;
+            document.getElementById('cardBalance').innerText = t.cardBalance;
+            document.getElementById('btnExport').innerHTML = `<i class="bi bi-file-earmark-spreadsheet"></i>` + t.btnExport;
+
+            document.getElementById('thDate').innerText = t.thDate;
+            document.getElementById('thTime').innerText = t.thTime;
+            document.getElementById('thType').innerText = t.thType;
+            document.getElementById('thItem').innerText = t.thItem;
+            document.getElementById('thPrice').innerText = t.thPrice;
+            document.getElementById('thEdit').innerText = t.thEdit;
+            document.getElementById('thDelete').innerText = t.thDelete;
+
+            document.getElementById('shareTitle').innerHTML = `<i class="bi bi-share-fill"></i> ` + t.shareTitle;
+            document.getElementById('editBoxTitle').innerText = t.editBoxTitle;
+            document.getElementById('optEditExpense').innerText = t.optExpense;
+            document.getElementById('optEditIncome').innerText = t.optIncome;
+            document.getElementById('btnEditSave').innerText = t.btnEditSave;
+            document.getElementById('btnEditCancel').innerText = t.btnEditCancel;
+            document.getElementById('delBoxTitle').innerText = t.delBoxTitle;
+            document.getElementById('btnDelConfirm').innerText = t.btnDelConfirm;
+            document.getElementById('btnDelCancel').innerText = t.btnDelCancel;
+
+            // รีโหลดชื่อเดือนและรีเฟรชตารางข้อมูลให้แสดงผลตามภาษาที่เปลี่ยน
+            updateMonthSelectOptions();
+            loadExpenses();
+        }
+
+        function updateMonthSelectOptions() {
+            const currentSelected = monthSelect.value;
+            monthSelect.innerHTML = '';
+            for (let y = 2025; y <= 2030; y++) {
+                for (let m = 1; m <= 12; m++) {
+                    const mStr = m.toString().padStart(2, '0');
+                    const opt = document.createElement('option');
+                    opt.value = `${y}-${mStr}`;
+                    opt.textContent = `${getMonthNameByLang(mStr, currentLang)} ${y}`;
+                    if (`${y}-${mStr}` === currentSelected) opt.selected = true;
+                    monthSelect.appendChild(opt);
+                }
+            }
+        }
+
+        function getMonthNameByLang(m, lang) {
+            const months = {
+                lo: ["ມັງກອນ", "ກຸມພາ", "ມີນາ", "ເມສາ", "ພຶດສະພາ", "ມิຖຸນາ", "ກໍລະກົດ", "ສິງຫາ", "ກັນຍາ", "ຕຸລາ", "ພະຈິກ", "ທັນວາ"],
+                th: ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"],
+                vi: ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"],
+                en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+            };
+            return months[lang][parseInt(m) - 1];
+        }
+
         function initApp() {
             const now = new Date();
             monthSelect.innerHTML = '';
@@ -382,7 +554,7 @@
                     const mStr = m.toString().padStart(2, '0');
                     const opt = document.createElement('option');
                     opt.value = `${y}-${mStr}`;
-                    opt.textContent = `${getLaoMonth(mStr)} ${y}`;
+                    opt.textContent = `${getMonthNameByLang(mStr, currentLang)} ${y}`;
                     if (y === now.getFullYear() && m === (now.getMonth() + 1)) opt.selected = true;
                     monthSelect.appendChild(opt);
                 }
@@ -393,8 +565,7 @@
         }
 
         function getLaoMonth(m) {
-            const months = ["ມັງກອນ", "ກຸມພາ", "ມີນາ", "ເມສາ", "ພຶດສະພາ", "ມິຖຸນາ", "ກໍລະກົດ", "ສິງຫາ", "ກັນຍາ", "ຕຸລາ", "ພະຈິກ", "ທັນວາ"];
-            return months[parseInt(m) - 1];
+            return getMonthNameByLang(m, 'lo');
         }
 
         function loadMonth() {
@@ -409,7 +580,7 @@
             const type = document.getElementById('typeInput').value;
             const item = document.getElementById('itemInput').value;
             const price = document.getElementById('priceInput').value;
-            if (!date || !item || !price) return alert("ກະລຸນາກອກຂໍ້ມູນໃຫ້ຄົບ");
+            if (!date || !item || !price) return alert(translations[currentLang].alertFill);
 
             const dObj = new Date(date);
             const y = dObj.getFullYear();
@@ -418,7 +589,7 @@
             db.ref(`expenses/${y}/${m}`).push({
                 date, type, item, price: parseFloat(price), time: new Date().toLocaleTimeString('lo-LA')
             }).then(() => {
-                showNotif("ບັນທຶກສຳເລັດ");
+                showNotif(translations[currentLang].notifSave);
                 document.getElementById('itemInput').value = '';
                 document.getElementById('priceInput').value = '';
                 loadMonth();
@@ -427,38 +598,40 @@
 
         function loadExpenses() {
             expenseTable.innerHTML = "<tr><td colspan='8'>Loading...</td></tr>";
+            db.ref(`expenses/${currentYear}/${currentMonth}`).off('value'); // เคลียร์ Event เดิมก่อนผูกใหม่กันการซ้อนทับ
             db.ref(`expenses/${currentYear}/${currentMonth}`).on('value', snap => {
                 expenseTable.innerHTML = "";
                 let totalIncome = 0, totalExpense = 0, todayExpense = 0, todayIncome = 0;
                 const today = new Date().toISOString().split('T')[0];
                 let count = 1;
+                const t = translations[currentLang];
 
                 if (!snap.exists()) {
-                    document.getElementById('todayIncomeText').innerText = "0 ກີບ";
-                    document.getElementById('monthIncomeText').innerText = "0 ກີບ";
-                    document.getElementById('monthExpenseText').innerText = "0 ກີບ";
-                    document.getElementById('totalText').innerText = "0 ກີບ";
-                    document.getElementById('todayTotalText').innerText = "0 ກີບ";
-                    return expenseTable.innerHTML = "<tr><td colspan='8'>ບໍ່ມີຂໍ້ມູນ</td></tr>";
+                    document.getElementById('todayIncomeText').innerText = "0" + t.currency;
+                    document.getElementById('monthIncomeText').innerText = "0" + t.currency;
+                    document.getElementById('monthExpenseText').innerText = "0" + t.currency;
+                    document.getElementById('totalText').innerText = "0" + t.currency;
+                    document.getElementById('todayTotalText').innerText = "0" + t.currency;
+                    return expenseTable.innerHTML = `<tr><td colspan='8'>${t.noData}</td></tr>`;
                 }
 
                 snap.forEach(child => {
                     const val = child.val();
 
                     const d = val.date || "-";
-                    const t = val.time || "-";
+                    const timeStr = val.time || "-";
                     const type = val.type || "expense";
                     const itm = val.item || "-";
                     const prc = val.price || 0;
 
-                    let typeText = "ລາຍຈ່າຍ";
+                    let typeText = t.txtExpense;
                     let priceColor = "red";
                     let prefix = "-";
 
                     if (type === "income") {
                         totalIncome += prc;
                         if (d === today) todayIncome += prc;
-                        typeText = "ລายຮັບ";
+                        typeText = t.txtIncome;
                         priceColor = "green";
                         prefix = "+";
                     } else {
@@ -469,7 +642,7 @@
                     const row = `<tr>
                         <td>${count++}</td>
                         <td>${d}</td>
-                        <td>${t}</td>
+                        <td>${timeStr}</td>
                         <td style="color:${priceColor}">${typeText}</td>
                         <td>${itm}</td>
                         <td style="color:${priceColor}; font-weight:bold;">${prefix}${prc.toLocaleString()}</td>
@@ -481,11 +654,11 @@
 
                 let netBalance = totalIncome - totalExpense;
 
-                document.getElementById('todayIncomeText').innerText = todayIncome.toLocaleString() + " ກີບ";
-                document.getElementById('monthIncomeText').innerText = totalIncome.toLocaleString() + " ກີບ";
-                document.getElementById('monthExpenseText').innerText = totalExpense.toLocaleString() + " ກີບ";
-                document.getElementById('todayTotalText').innerText = todayExpense.toLocaleString() + " ກີບ";
-                document.getElementById('totalText').innerText = netBalance.toLocaleString() + " ກີບ";
+                document.getElementById('todayIncomeText').innerText = todayIncome.toLocaleString() + t.currency;
+                document.getElementById('monthIncomeText').innerText = totalIncome.toLocaleString() + t.currency;
+                document.getElementById('monthExpenseText').innerText = totalExpense.toLocaleString() + t.currency;
+                document.getElementById('todayTotalText').innerText = todayExpense.toLocaleString() + t.currency;
+                document.getElementById('totalText').innerText = netBalance.toLocaleString() + t.currency;
                 document.getElementById('totalText').style.color = netBalance >= 0 ? "#007bff" : "red";
             });
         }
@@ -525,7 +698,10 @@
                 type: document.getElementById('editType').value,
                 item: document.getElementById('editItem').value,
                 price: parseFloat(document.getElementById('editPrice').value)
-            }).then(() => { document.getElementById('editBox').style.display = 'none'; showNotif("ແກ້ໄຂແລ້ວ"); });
+            }).then(() => {
+                document.getElementById('editBox').style.display = 'none';
+                showNotif(translations[currentLang].notifEdit);
+            });
         }
         window.closeEdit = () => document.getElementById('editBox').style.display = 'none';
 
